@@ -6,6 +6,8 @@ export const mockPosts: Post[] = [
     title: '맛있는 피자집',
     content: '정말 맛있는 피자를 먹었어요! 도우가 쫄깃하고 토핑이 풍성해요.',
     author: '김철수',
+    restaurantName: '피자헛 강남점',
+    disappointment: '가격이 조금 비싸요',
     images: [
       'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400',
       'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400',
@@ -27,6 +29,8 @@ export const mockPosts: Post[] = [
     title: '분위기 좋은 카페',
     content: '조용하고 아늑한 분위기의 카페입니다. 커피도 맛있어요.',
     author: '이영희',
+    restaurantName: '스타벅스 홍대점',
+    disappointment: '사람이 너무 많아요',
     images: [
       'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400',
       'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=400'
@@ -46,19 +50,22 @@ export const mockPosts: Post[] = [
         id: '1',
         reportType: ReportType.PROMOTIONAL_CONTENT,
         reportDetail: '영리 목적의 홍보성 리뷰로 판단됩니다.',
-        createdAt: new Date('2024-01-14T10:30:00')
+        createdAt: new Date('2024-01-14T10:30:00'),
+        reporterName: '신고자1'
       },
       {
         id: '2',
         reportType: ReportType.SPAM,
         reportDetail: '도배성 내용으로 판단됩니다.',
-        createdAt: new Date('2024-01-14T14:20:00')
+        createdAt: new Date('2024-01-14T14:20:00'),
+        reporterName: '신고자2'
       },
       {
         id: '3',
         reportType: ReportType.PROFANITY_OR_ATTACK,
         reportDetail: '다른 사용자를 공격하는 내용입니다.',
-        createdAt: new Date('2024-01-14T16:45:00')
+        createdAt: new Date('2024-01-14T16:45:00'),
+        reporterName: '신고자3'
       }
     ]
   },
@@ -67,6 +74,8 @@ export const mockPosts: Post[] = [
     title: '신선한 회사랑',
     content: '신선한 회와 함께하는 맛있는 한상차림!',
     author: '박민수',
+    restaurantName: '해운대 회사랑',
+    disappointment: '가격이 비싸지만 맛있어요',
     images: [
       'https://images.unsplash.com/photo-1579584425555-c3d17c4fca56?w=400',
       'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400'
@@ -87,6 +96,8 @@ export const mockPosts: Post[] = [
     title: '불량 음식점',
     content: '음식이 너무 맛없고 위생 상태도 좋지 않아요.',
     author: '최지영',
+    restaurantName: '마포 김치찌개',
+    disappointment: '음식이 너무 맛없고 위생 상태도 좋지 않아요',
     images: [
       'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400'
     ],
@@ -104,31 +115,36 @@ export const mockPosts: Post[] = [
         id: '4',
         reportType: ReportType.PROMOTIONAL_CONTENT,
         reportDetail: '영리 목적의 홍보성 리뷰로 판단됩니다.',
-        createdAt: new Date('2024-01-12T09:15:00')
+        createdAt: new Date('2024-01-12T09:15:00'),
+        reporterName: '신고자4'
       },
       {
         id: '5',
         reportType: ReportType.ILLEGAL_INFORMATION,
         reportDetail: '불법 정보가 포함되어 있습니다.',
-        createdAt: new Date('2024-01-12T11:30:00')
+        createdAt: new Date('2024-01-12T11:30:00'),
+        reporterName: '신고자5'
       },
       {
         id: '6',
         reportType: ReportType.PROFANITY_OR_ATTACK,
         reportDetail: '특정 업체를 비방하는 내용입니다.',
-        createdAt: new Date('2024-01-12T13:45:00')
+        createdAt: new Date('2024-01-12T13:45:00'),
+        reporterName: '신고자6'
       },
       {
         id: '7',
         reportType: ReportType.SPAM,
         reportDetail: '반복적인 부정적 리뷰입니다.',
-        createdAt: new Date('2024-01-12T15:20:00')
+        createdAt: new Date('2024-01-12T15:20:00'),
+        reporterName: '신고자7'
       },
       {
         id: '8',
         reportType: ReportType.PERSONAL_INFORMATION_EXPOSURE,
         reportDetail: '개인 정보가 노출되어 있습니다.',
-        createdAt: new Date('2024-01-12T17:10:00')
+        createdAt: new Date('2024-01-12T17:10:00'),
+        reporterName: '신고자8'
       }
     ]
   }
@@ -139,24 +155,57 @@ export const mockReportedUsers: ReportedUser[] = [
     id: '1',
     name: '김철수',
     reportCount: 3,
-    reportType: ReportType.PROFANITY_OR_ATTACK,
-    reportDetail: '다른 사용자에게 욕설을 사용했습니다.',
-    reportedAt: new Date('2024-01-15T09:00:00')
+    reports: [
+      {
+        reportType: ReportType.PROFANITY_OR_ATTACK,
+        reportDetail: '다른 사용자에게 욕설을 사용했습니다.',
+        reportedAt: new Date('2024-01-15T09:00:00'),
+        reporterName: '신고자A'
+      },
+      {
+        reportType: ReportType.SPAM,
+        reportDetail: '반복적으로 도배성 글을 작성했습니다.',
+        reportedAt: new Date('2024-01-15T14:30:00'),
+        reporterName: '신고자B'
+      },
+      {
+        reportType: ReportType.PROMOTIONAL_CONTENT,
+        reportDetail: '영리 목적의 홍보성 리뷰를 작성했습니다.',
+        reportedAt: new Date('2024-01-15T16:45:00'),
+        reporterName: '신고자C'
+      }
+    ]
   },
   {
     id: '2',
     name: '이영희',
-    reportCount: 5,
-    reportType: ReportType.SPAM,
-    reportDetail: '반복적으로 도배성 글을 작성했습니다.',
-    reportedAt: new Date('2024-01-14T09:00:00')
+    reportCount: 2,
+    reports: [
+      {
+        reportType: ReportType.SPAM,
+        reportDetail: '반복적으로 도배성 글을 작성했습니다.',
+        reportedAt: new Date('2024-01-14T09:00:00'),
+        reporterName: '신고자D'
+      },
+      {
+        reportType: ReportType.PROFANITY_OR_ATTACK,
+        reportDetail: '다른 사용자를 공격하는 내용을 작성했습니다.',
+        reportedAt: new Date('2024-01-14T11:20:00'),
+        reporterName: '신고자E'
+      }
+    ]
   },
   {
     id: '3',
     name: '박민수',
-    reportCount: 2,
-    reportType: ReportType.PROMOTIONAL_CONTENT,
-    reportDetail: '영리 목적의 홍보성 리뷰를 작성했습니다.',
-    reportedAt: new Date('2024-01-13T09:00:00')
+    reportCount: 1,
+    reports: [
+      {
+        reportType: ReportType.PROMOTIONAL_CONTENT,
+        reportDetail: '영리 목적의 홍보성 리뷰를 작성했습니다.',
+        reportedAt: new Date('2024-01-13T09:00:00'),
+        reporterName: '신고자F'
+      }
+    ]
   }
 ]; 

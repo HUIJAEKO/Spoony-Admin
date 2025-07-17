@@ -16,7 +16,21 @@ const Posts: React.FC = () => {
     <div style={{ padding: 32 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <h2>전체 글 목록</h2>
-        <span style={{ color: '#666', fontSize: 14 }}>총 {posts.length}개의 글</span>
+        <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+          <span style={{ color: '#666', fontSize: 14 }}>총 {posts.length}개의 글</span>
+          {posts.filter(post => post.isReported).length > 0 && (
+            <span style={{ 
+              color: '#d32f2f', 
+              fontSize: 14, 
+              fontWeight: 600,
+              background: '#ffebee',
+              padding: '4px 8px',
+              borderRadius: '12px'
+            }}>
+              신고된 글 {posts.filter(post => post.isReported).length}개
+            </span>
+          )}
+        </div>
       </div>
       
       <div style={{ background: '#f8f9fa', borderRadius: 8, padding: 24 }}>
@@ -29,6 +43,7 @@ const Posts: React.FC = () => {
               post={post} 
               onDelete={handleDelete}
               showDeleteButton={true}
+              showReportBadge={true}
             />
           ))
         )}

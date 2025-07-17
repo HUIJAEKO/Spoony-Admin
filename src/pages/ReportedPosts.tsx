@@ -29,6 +29,7 @@ const ReportedPosts: React.FC = () => {
               post={post} 
               onDelete={handleDelete}
               showDeleteButton={true}
+              showReportBadge={true}
             />
           ))
         )}

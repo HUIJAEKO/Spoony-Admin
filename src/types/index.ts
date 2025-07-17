@@ -27,6 +27,7 @@ export interface Report {
   reportType: ReportType;
   reportDetail: string;
   createdAt: Date;
+  reporterName: string; // 신고자 닉네임 추가
 }
 
 export interface Post {
@@ -34,6 +35,8 @@ export interface Post {
   title: string;
   content: string;
   author: string;
+  restaurantName: string; // 식당 이름 추가
+  disappointment: string; // 아쉬운점 추가
   images: string[];
   location: string;
   menus: Menu[];
@@ -48,9 +51,12 @@ export interface ReportedUser {
   id: string;
   name: string;
   reportCount: number;
-  reportType: ReportType;
-  reportDetail: string;
-  reportedAt: Date;
+  reports: {
+    reportType: ReportType;
+    reportDetail: string;
+    reportedAt: Date;
+    reporterName: string;
+  }[];
 }
 
 export interface ApiResponse<T> {

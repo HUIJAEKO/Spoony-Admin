@@ -6,9 +6,10 @@ interface PostCardProps {
   post: Post;
   onDelete?: (postId: string) => void;
   showDeleteButton?: boolean;
+  showReportBadge?: boolean;
 }
 
-const PostCard: React.FC<PostCardProps> = ({ post, onDelete, showDeleteButton = true }) => {
+const PostCard: React.FC<PostCardProps> = ({ post, onDelete, showDeleteButton = true, showReportBadge = false }) => {
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('ko-KR', {
       year: 'numeric',
@@ -19,11 +20,18 @@ const PostCard: React.FC<PostCardProps> = ({ post, onDelete, showDeleteButton = 
     }).format(date);
   };
 
+  // 디버깅용 로그
+  console.log('Post data:', post);
+  console.log('Post disappointment:', post.disappointment);
+  console.log('Post title:', post.title);
+
   return (
-    <div className="post-card">
+    <div className={`post-card ${post.isReported ? 'reported' : ''}`}>
       <div className="post-header">
         <div className="post-info">
           <h3 className="post-title">{post.title}</h3>
+          <div className="restaurant-name">
+          </div>
           <div className="post-meta">
             <span className="author">작성자: {post.author}</span>
             <span className="date">{formatDate(post.createdAt)}</span>
@@ -71,6 +79,11 @@ const PostCard: React.FC<PostCardProps> = ({ post, onDelete, showDeleteButton = 
         </div>
       )}
 
+      <div className="disappointment-section">
+        <h4>아쉬운점</h4>
+        <p className="disappointment-text">{post.disappointment || '아쉬운점이 없습니다.'}</p>
+      </div>
+
       {post.isReported && post.reports && post.reports.length > 0 && (
         <div className="post-reports">
           <h4>신고 정보</h4>
@@ -84,13 +97,17 @@ const PostCard: React.FC<PostCardProps> = ({ post, onDelete, showDeleteButton = 
                 <div className="report-detail">
                   {report.reportDetail}
                 </div>
+                <div className="report-reporter">
+                  <span className="reporter-label">신고자:</span>
+                  <span className="reporter-name">{report.reporterName}</span>
+                </div>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {post.isReported && (
+      {post.isReported && showReportBadge && (
         <div className="reported-badge">
           ⚠️ 신고됨 ({post.reportCount}회)
         </div>
