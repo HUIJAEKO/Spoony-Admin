@@ -82,4 +82,23 @@ export interface TableColumn {
 export interface LoginCredentials {
   email: string;
   password: string;
+}
+
+export interface AdminInfo {
+  id: number;
+  username: string;
+}
+
+export interface LoginRequest {
+  username: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  success: boolean;
+  data: {
+    accessToken: string;
+    adminInfo: AdminInfo;
+  };
+  message: string;
 } 

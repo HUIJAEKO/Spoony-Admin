@@ -6,17 +6,15 @@ import ReportedPosts from './pages/ReportedPosts';
 import ReportedUsers from './pages/ReportedUsers';
 import Sidebar from './components/Sidebar';
 import './App.css';
-
-// 보안 해제: 항상 인증된 것으로 처리
-const isAuthenticated = () => {
-  return true; // 항상 true로 반환하여 보안 해제
-};
+import { useAuth } from './hooks/useAuth';
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated } = useAuth();
   return isAuthenticated() ? <>{children}</> : <Navigate to="/login" replace />;
 };
 
 function App() {
+  const { isAuthenticated } = useAuth();
   return (
     <Router>
       <div style={{ display: 'flex' }}>

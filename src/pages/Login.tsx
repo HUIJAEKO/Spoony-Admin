@@ -1,25 +1,22 @@
 import React, { useState } from 'react';
 import './Login.css';
+import { useAuth } from '../hooks/useAuth';
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const { login, error, loading } = useAuth();
+  const [formError, setFormError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
-    // TODO: 실제 로그인 API 연동
-    if (email === 'admin@spoony.com' && password === 'admin1234') {
-      // 로그인 성공 시 토큰 저장 및 리다이렉트
-      localStorage.setItem('token', 'dummy-token');
+    setFormError('');
+    const success = await login(username, password);
+    if (success) {
       window.location.href = '/posts';
     } else {
-      setError('이메일 또는 비밀번호가 올바르지 않습니다.');
+      setFormError('아이디 또는 비밀번호가 올바르지 않습니다.');
     }
-    setLoading(false);
   };
 
   return (
@@ -27,10 +24,10 @@ const Login: React.FC = () => {
       <form className="login-form" onSubmit={handleSubmit}>
         <h2>관리자 로그인</h2>
         <input
-          type="email"
-          placeholder="이메일"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
+          type="text"
+          placeholder="아이디"
+          value={username}
+          onChange={e => setUsername(e.target.value)}
           required
         />
         <input
@@ -40,7 +37,7 @@ const Login: React.FC = () => {
           onChange={e => setPassword(e.target.value)}
           required
         />
-        {error && <div className="login-error">{error}</div>}
+        {(formError || error) && <div className="login-error">{formError || error}</div>}
         <button type="submit" disabled={loading}>
           {loading ? '로그인 중...' : '로그인'}
         </button>
