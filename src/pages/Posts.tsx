@@ -1,53 +1,77 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PostCard from '../components/PostCard';
-import { Post } from '../types';
-import { mockPosts } from '../utils/mockData';
+import LoadingSpinner from '../components/common/LoadingSpinner';
+import ErrorDisplay from '../components/common/ErrorDisplay';
+import Pagination from '../components/common/Pagination';
+import { usePosts } from '../hooks/usePosts';
+import { useDeletePost } from '../hooks/useDeletePost';
+import { PAGINATION } from '../constants/pagination';
+import './Posts.css';
 
+/**
+ * 전체 게시글 목록을 표시하는 페이지 컴포넌트
+ * @returns 게시글 목록 페이지 JSX
+ */
 const Posts: React.FC = () => {
-  const [posts, setPosts] = useState<Post[]>(mockPosts);
+  // 게시글 목록 관련 훅
+  const { posts, loading, error, pagination, fetchPosts, handlePageChange } = usePosts(PAGINATION.LARGE_PAGE_SIZE);
+  // 게시글 삭제 관련 훅
+  const { handleDelete } = useDeletePost();
 
-  const handleDelete = (postId: string) => {
-    if (window.confirm('정말로 이 글을 삭제하시겠습니까?')) {
-      setPosts(posts.filter(post => post.id !== postId));
-    }
+  /**
+   * 게시글 삭제 성공 후 목록 새로고침
+   */
+  const onDeleteSuccess = () => {
+    fetchPosts(pagination.page, pagination.size);
   };
 
+  // 로딩 중일 때 스피너 표시
+  if (loading) {
+    return <LoadingSpinner message="게시글을 불러오는 중..." />;
+  }
+
+  // 에러 발생 시 에러 표시
+  if (error) {
+    return <ErrorDisplay error={error} onRetry={() => fetchPosts()} />;
+  }
+
+  // 신고된 게시글 개수 계산
+  const reportedPostsCount = posts.filter(post => post.isReported).length;
+
   return (
-    <div style={{ padding: 32 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+    <div className="posts-container">
+      {/* 페이지 헤더 */}
+      <div className="posts-header">
         <h2>전체 글 목록</h2>
-        <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-          <span style={{ color: '#666', fontSize: 14 }}>총 {posts.length}개의 글</span>
-          {posts.filter(post => post.isReported).length > 0 && (
-            <span style={{ 
-              color: '#d32f2f', 
-              fontSize: 14, 
-              fontWeight: 600,
-              background: '#ffebee',
-              padding: '4px 8px',
-              borderRadius: '12px'
-            }}>
-              신고된 글 {posts.filter(post => post.isReported).length}개
+        <div className="posts-stats">
+          <span className="total-count">총 {pagination.total}개의 글</span>
+          {reportedPostsCount > 0 && (
+            <span className="reported-count">
+              신고된 글 {reportedPostsCount}개
             </span>
           )}
         </div>
       </div>
       
-      <div style={{ background: '#f8f9fa', borderRadius: 8, padding: 24 }}>
+      {/* 게시글 목록 */}
+      <div className="posts-content">
         {posts.length === 0 ? (
-          <p style={{ textAlign: 'center', color: '#666' }}>글이 없습니다.</p>
+          <p className="no-posts">글이 없습니다.</p>
         ) : (
           posts.map(post => (
             <PostCard 
-              key={post.id} 
+              key={post.postId} 
               post={post} 
-              onDelete={handleDelete}
+              onDelete={(postId) => handleDelete(postId, onDeleteSuccess)}
               showDeleteButton={true}
               showReportBadge={true}
             />
           ))
         )}
       </div>
+
+      {/* 페이지네이션 */}
+      <Pagination pagination={pagination} onPageChange={handlePageChange} />
     </div>
   );
 };

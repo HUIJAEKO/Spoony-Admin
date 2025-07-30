@@ -1,0 +1,49 @@
+.posts-container {
+  padding: 32px;
+}
+
+.posts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.posts-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
+
+.posts-stats {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.total-count {
+  color: #666;
+  font-size: 14px;
+}
+
+.reported-count {
+  color: #d32f2f;
+  font-size: 14px;
+  font-weight: 600;
+  background: #ffebee;
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+.posts-content {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.no-posts {
+  text-align: center;
+  color: #666;
+  margin: 0;
+} 

@@ -1,164 +1,124 @@
-import React, { useState } from 'react';
-import { ReportedUser, Post } from '../types';
-import { mockReportedUsers, mockPosts } from '../utils/mockData';
+import React from 'react';
 import PostCard from '../components/PostCard';
+import LoadingSpinner from '../components/common/LoadingSpinner';
+import ErrorDisplay from '../components/common/ErrorDisplay';
+import Pagination from '../components/common/Pagination';
+import { useReportedUsers } from '../hooks/useReportedUsers';
+import { useUserPosts } from '../hooks/useUserPosts';
+import { useDeletePost } from '../hooks/useDeletePost';
+import { getUserReportTypeKorean } from '../utils/reportTypeUtils';
+import { formatDate } from '../utils/dateUtils';
+import { showConfirmDialog } from '../utils/alertUtils';
+import { MESSAGES } from '../constants/messages';
+import { PAGINATION } from '../constants/pagination';
+import './ReportedUsers.css';
 
+/**
+ * 신고된 사용자 목록을 표시하는 페이지 컴포넌트
+ * @returns 신고된 사용자 목록 페이지 JSX
+ */
 const ReportedUsers: React.FC = () => {
-  const [users, setUsers] = useState<ReportedUser[]>(mockReportedUsers);
-  const [selectedUser, setSelectedUser] = useState<string | null>(null);
-  const [userPosts, setUserPosts] = useState<Post[]>([]);
+  // 신고된 사용자 목록 관련 훅
+  const { users, loading, error, pagination, fetchReportedUsers, handlePageChange } = useReportedUsers(PAGINATION.LARGE_PAGE_SIZE);
+  // 사용자 게시글 관련 훅
+  const { userPosts, selectedUser, handleUserClick, handleDeletePost } = useUserPosts();
+  // 게시글 삭제 관련 훅
+  const { handleDelete } = useDeletePost();
 
-  const handleDelete = (userId: string) => {
-    if (window.confirm('정말로 이 유저를 삭제하시겠습니까?')) {
-      setUsers(users.filter(user => user.id !== userId));
-      if (selectedUser === userId) {
-        setSelectedUser(null);
-        setUserPosts([]);
-      }
+  /**
+   * 사용자 삭제 핸들러
+   * @param userId 삭제할 사용자 ID
+   */
+  const handleUserDelete = (userId: string) => {
+    if (showConfirmDialog(MESSAGES.USER.DELETE_CONFIRM)) {
+      // 실제 유저 삭제 API 호출 로직 추가 필요
+      console.log('유저 삭제:', userId);
     }
   };
 
-  const handleUserClick = (userName: string) => {
-    if (selectedUser === userName) {
-      // 같은 유저를 다시 클릭하면 선택 해제
-      setSelectedUser(null);
-      setUserPosts([]);
-    } else {
-      // 다른 유저를 클릭하면 해당 유저의 글을 필터링
-      setSelectedUser(userName);
-      const filteredPosts = mockPosts.filter(post => post.author === userName);
-      setUserPosts(filteredPosts);
-    }
+  /**
+   * 게시글 삭제 성공 후 로컬 상태 업데이트
+   * @param postId 삭제된 게시글 ID
+   */
+  const onDeletePostSuccess = (postId: string) => {
+    handleDeletePost(postId);
   };
 
-  const handleDeletePost = (postId: string) => {
-    if (window.confirm('정말로 이 글을 삭제하시겠습니까?')) {
-      setUserPosts(userPosts.filter(post => post.id !== postId));
-    }
-  };
+  // 로딩 중일 때 스피너 표시
+  if (loading) {
+    return <LoadingSpinner message="신고된 유저를 불러오는 중..." />;
+  }
 
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('ko-KR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date);
-  };
+  // 에러 발생 시 에러 표시
+  if (error) {
+    return <ErrorDisplay error={error} onRetry={() => fetchReportedUsers()} />;
+  }
 
   return (
-    <div style={{ padding: 32 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+    <div className="reported-users-container">
+      {/* 페이지 헤더 */}
+      <div className="reported-users-header">
         <h2>신고된 유저 목록</h2>
-        <span style={{ color: '#666', fontSize: 14 }}>총 {users.length}명의 신고된 유저</span>
+        <span className="user-count">총 {users.length}명의 신고된 유저</span>
       </div>
       
-      <div style={{ background: '#fff', borderRadius: 8, padding: 24, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+      {/* 사용자 테이블 */}
+      <div className="users-table-container">
         {users.length === 0 ? (
-          <p style={{ textAlign: 'center', color: '#666' }}>신고된 유저가 없습니다.</p>
+          <p className="no-users">신고된 유저가 없습니다.</p>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <div className="table-wrapper">
+            <table className="users-table">
               <thead>
-                <tr style={{ borderBottom: '2px solid #f0f0f0' }}>
-                  <th style={{ padding: '12px', textAlign: 'left', fontWeight: 600 }}>이름</th>
-                  <th style={{ padding: '12px', textAlign: 'center', fontWeight: 600 }}>신고 횟수</th>
-                  <th style={{ padding: '12px', textAlign: 'left', fontWeight: 600 }}>신고 정보</th>
-                  <th style={{ padding: '12px', textAlign: 'center', fontWeight: 600 }}>작업</th>
+                <tr>
+                  <th>이름</th>
+                  <th>신고 횟수</th>
+                  <th>신고 정보</th>
+                  <th>작업</th>
                 </tr>
               </thead>
               <tbody>
                 {users.map(user => (
-                  <tr key={user.id} style={{ borderBottom: '1px solid #f0f0f0' }}>
-                    <td style={{ padding: '12px' }}>
+                  <tr key={user.userId}>
+                    <td>
                       <button
-                        onClick={() => handleUserClick(user.name)}
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          fontSize: '16px',
-                          fontWeight: selectedUser === user.name ? '600' : '400',
-                          color: selectedUser === user.name ? '#1976d2' : '#222',
-                          cursor: 'pointer',
-                          textDecoration: selectedUser === user.name ? 'underline' : 'none',
-                          padding: '4px 8px',
-                          borderRadius: '4px',
-                          transition: 'all 0.2s'
-                        }}
-                        onMouseOver={(e) => e.currentTarget.style.background = '#f5f5f5'}
-                        onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
+                        className={`user-name-button ${selectedUser === user.userName ? 'selected' : ''}`}
+                        onClick={() => handleUserClick(user.userName, user.userId)}
                       >
-                        {user.name}
+                        {user.userName}
                       </button>
                     </td>
-                    <td style={{ padding: '12px', textAlign: 'center' }}>
-                      <span style={{ 
-                        background: '#ffebee', 
-                        color: '#d32f2f', 
-                        padding: '4px 8px', 
-                        borderRadius: '12px',
-                        fontSize: '12px',
-                        fontWeight: 600
-                      }}>
+                    <td className="report-count-cell">
+                      <span className="report-count-badge">
                         {user.reportCount}회
                       </span>
                     </td>
-                    <td style={{ padding: '12px' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <td>
+                      <div className="reports-container">
                         {user.reports.map((report, index) => (
-                          <div key={index} style={{ 
-                            background: '#f8f9fa', 
-                            padding: '8px', 
-                            borderRadius: '6px',
-                            border: '1px solid #e9ecef'
-                          }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                              <span style={{ 
-                                background: '#e3f2fd', 
-                                color: '#1976d2', 
-                                padding: '2px 6px', 
-                                borderRadius: '8px',
-                                fontSize: '11px',
-                                fontWeight: 600
-                              }}>
-                                {report.reportType}
+                          <div key={index} className="report-item">
+                            <div className="report-header">
+                              <span className="report-type-badge">
+                                {getUserReportTypeKorean(report.reportType)}
                               </span>
-                              <span style={{ 
-                                background: '#f3e5f5', 
-                                color: '#7b1fa2', 
-                                padding: '2px 6px', 
-                                borderRadius: '8px',
-                                fontSize: '11px',
-                                fontWeight: 600
-                              }}>
-                                {report.reporterName}
+                              <span className="reporter-name">
+                                신고자: {report.reporterName}
                               </span>
                             </div>
-                            <div style={{ fontSize: '13px', color: '#444', marginBottom: '4px' }}>
+                            <div className="report-detail">
                               {report.reportDetail}
                             </div>
-                            <div style={{ fontSize: '11px', color: '#666' }}>
-                              {formatDate(report.reportedAt)}
+                            <div className="report-date">
+                              {formatDate(report.createdAt)}
                             </div>
                           </div>
                         ))}
                       </div>
                     </td>
-                    <td style={{ padding: '12px', textAlign: 'center' }}>
+                    <td className="action-cell">
                       <button 
-                        onClick={() => handleDelete(user.id)}
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          fontSize: '16px',
-                          cursor: 'pointer',
-                          padding: '8px',
-                          borderRadius: '6px',
-                          transition: 'background 0.2s'
-                        }}
-                        onMouseOver={(e) => e.currentTarget.style.background = '#ffebee'}
-                        onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
+                        className="delete-button"
+                        onClick={() => handleUserDelete(user.userId)}
                         title="삭제"
                       >
                         🗑️
@@ -174,21 +134,21 @@ const ReportedUsers: React.FC = () => {
 
       {/* 선택된 유저의 글 목록 */}
       {selectedUser && (
-        <div style={{ marginTop: 32 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-            <h3 style={{ margin: 0, color: '#1976d2' }}>{selectedUser}의 글 목록</h3>
-            <span style={{ color: '#666', fontSize: 14 }}>총 {userPosts.length}개의 글</span>
+        <div className="user-posts-section">
+          <div className="user-posts-header">
+            <h3>{selectedUser}의 글 목록</h3>
+            <span className="posts-count">총 {userPosts.length}개의 글</span>
           </div>
           
-          <div style={{ background: '#f8f9fa', borderRadius: 8, padding: 24 }}>
+          <div className="user-posts-content">
             {userPosts.length === 0 ? (
-              <p style={{ textAlign: 'center', color: '#666' }}>글이 없습니다.</p>
+              <p className="no-posts">글이 없습니다.</p>
             ) : (
               userPosts.map(post => (
                 <PostCard 
-                  key={post.id} 
+                  key={post.postId} 
                   post={post} 
-                  onDelete={handleDeletePost}
+                  onDelete={(postId) => handleDelete(postId, () => onDeletePostSuccess(postId))}
                   showDeleteButton={true}
                   showReportBadge={true}
                 />
@@ -197,6 +157,9 @@ const ReportedUsers: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* 페이지네이션 */}
+      <Pagination pagination={pagination} onPageChange={handlePageChange} />
     </div>
   );
 };

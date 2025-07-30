@@ -1,0 +1,34 @@
+.reported-posts-container {
+  padding: 32px;
+}
+
+.reported-posts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.reported-posts-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
+
+.reported-count {
+  color: #666;
+  font-size: 14px;
+}
+
+.reported-posts-content {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.no-posts {
+  text-align: center;
+  color: #666;
+  margin: 0;
+} 

@@ -1,4 +1,10 @@
-// 공통 타입 정의
+/**
+ * 공통 타입 정의
+ */
+
+/**
+ * 사용자 정보 인터페이스
+ */
 export interface User {
   id: string;
   name: string;
@@ -8,69 +14,85 @@ export interface User {
   updatedAt: Date;
 }
 
+/**
+ * 메뉴 정보 인터페이스
+ */
 export interface Menu {
   id: string;
   name: string;
 }
 
-export enum ReportType {
-  PROMOTIONAL_CONTENT = '영리 목적/홍보성 리뷰',
-  PROFANITY_OR_ATTACK = '욕설/인신 공격',
-  ILLEGAL_INFORMATION = '불법정보',
-  PERSONAL_INFORMATION_EXPOSURE = '개인 정보 노출',
-  SPAM = '도배',
-  OTHER = '기타'
-}
-
+/**
+ * 신고 정보 인터페이스
+ */
 export interface Report {
   id: string;
-  reportType: ReportType;
+  reportType: string;
   reportDetail: string;
-  createdAt: Date;
-  reporterName: string; // 신고자 닉네임 추가
+  createdAt: string;
+  reporterName: string;
 }
 
+/**
+ * 게시글 정보 인터페이스
+ */
 export interface Post {
-  id: string;
-  title: string;
+  postId: string;
+  authorId: string;
+  authorName: string;
   content: string;
-  author: string;
-  restaurantName: string; // 식당 이름 추가
-  disappointment: string; // 아쉬운점 추가
-  images: string[];
+  restaurantName: string;
+  disappointment: string;
+  imageUrls: string[];
   location: string;
   menus: Menu[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   isReported: boolean;
   reportCount: number;
   reports?: Report[];
 }
 
+/**
+ * 신고된 사용자 정보 인터페이스
+ */
 export interface ReportedUser {
-  id: string;
-  name: string;
+  userId: string;
+  userName: string;
   reportCount: number;
   reports: {
-    reportType: ReportType;
+    id: string;
+    reportType: string;
     reportDetail: string;
-    reportedAt: Date;
     reporterName: string;
+    createdAt: string;
   }[];
 }
 
+/**
+ * API 응답 공통 인터페이스
+ */
 export interface ApiResponse<T> {
   data: T;
-  message: string;
   success: boolean;
+  error?: {
+    message: string;
+  };
 }
 
+/**
+ * 페이지네이션 파라미터 인터페이스
+ */
 export interface PaginationParams {
   page: number;
-  limit: number;
+  size: number;
   total: number;
+  totalPages: number;
 }
 
+/**
+ * 테이블 컬럼 정의 인터페이스
+ */
 export interface TableColumn {
   key: string;
   title: string;
@@ -79,26 +101,62 @@ export interface TableColumn {
   render?: (value: any, record: any) => React.ReactNode;
 }
 
+/**
+ * 로그인 인증 정보 인터페이스
+ */
 export interface LoginCredentials {
   email: string;
   password: string;
 }
 
+/**
+ * 관리자 정보 인터페이스
+ */
 export interface AdminInfo {
   id: number;
   username: string;
 }
 
+/**
+ * 로그인 요청 인터페이스
+ */
 export interface LoginRequest {
-  username: string;
+  email: string;
   password: string;
 }
 
+/**
+ * JWT 토큰 정보 인터페이스
+ */
+export interface AdminJwtTokenDTO {
+  token: string;
+}
+
+/**
+ * 로그인 응답 인터페이스
+ */
 export interface LoginResponse {
   success: boolean;
   data: {
-    accessToken: string;
-    adminInfo: AdminInfo;
+    exists: boolean;
+    adminId: number;
+    email: string;
+    adminJwtTokenDTO: string;
   };
-  message: string;
-} 
+  error: {
+    message: string;
+  };
+}
+
+/**
+ * 게시글 목록 응답 인터페이스
+ */
+export interface PostsResponse {
+  posts: Post[];
+  pagination: PaginationParams;
+}
+
+/**
+ * 게시글 API 응답 인터페이스
+ */
+export interface PostsApiResponse extends ApiResponse<PostsResponse> {} 
