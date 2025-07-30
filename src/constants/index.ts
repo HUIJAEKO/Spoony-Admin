@@ -1,6 +1,3 @@
-// 상수 정의
-export const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
-
 export const ROUTES = {
   LOGIN: '/login',
   DASHBOARD: '/dashboard',
