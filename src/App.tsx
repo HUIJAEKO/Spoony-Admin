@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import Posts from './pages/Posts';
 import ReportedPosts from './pages/ReportedPosts';
 import ReportedUsers from './pages/ReportedUsers';
+import DeletedPosts from './pages/DeletedPosts';
 import Sidebar from './components/Sidebar';
 import './App.css';
 import { useAuth } from './hooks/useAuth';
@@ -36,6 +37,8 @@ function App() {
         <Route path="/reported-posts" element={<PrivateRoute><div style={{ display: 'flex' }}><Sidebar /><div style={{ marginLeft: 220, width: '100%' }}><ReportedPosts /></div></div></PrivateRoute>} />
         {/* 신고된 사용자 목록 페이지 */}
         <Route path="/reported-users" element={<PrivateRoute><div style={{ display: 'flex' }}><Sidebar /><div style={{ marginLeft: 220, width: '100%' }}><ReportedUsers /></div></div></PrivateRoute>} />
+        {/* 삭제된 게시글 목록 페이지 */}
+        <Route path="/deleted-posts" element={<PrivateRoute><div style={{ display: 'flex' }}><Sidebar /><div style={{ marginLeft: 220, width: '100%' }}><DeletedPosts /></div></div></PrivateRoute>} />
         {/* 기본 경로는 로그인 페이지로 리다이렉트 */}
         <Route path="/" element={<Navigate to="/login" replace />} />
         {/* 잘못된 경로는 로그인 페이지로 리다이렉트 */}

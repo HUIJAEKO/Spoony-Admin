@@ -17,8 +17,12 @@
 }
 
 .user-count {
-  color: #666;
+  color: #d32f2f;
   font-size: 14px;
+  font-weight: 600;
+  background: #ffebee;
+  padding: 4px 8px;
+  border-radius: 12px;
 }
 
 .users-table-container {
@@ -147,18 +151,16 @@
 }
 
 .delete-button {
-  background: none;
+  background: #fff;
   border: none;
   font-size: 16px;
   cursor: pointer;
   padding: 8px;
   border-radius: 6px;
   transition: background 0.2s;
+  color: #333;
 }
 
-.delete-button:hover {
-  background: #ffebee;
-}
 
 .user-posts-section {
   margin-top: 32px;

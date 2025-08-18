@@ -10,7 +10,7 @@ const getAuthToken = () => {
 };
 
 /**
- * 게시글 삭제 응답 인터페이스
+ * 게시글 물리적 삭제 응답 인터페이스
  */
 export interface DeletePostResponse {
   success: boolean;
@@ -21,11 +21,11 @@ export interface DeletePostResponse {
 }
 
 /**
- * 게시글을 삭제하는 API 호출
+ * 게시글을 물리적으로 삭제하는 API 호출
  * @param postId 삭제할 게시글 ID
  * @returns 삭제 응답 데이터
  */
-export async function deletePost(postId: string): Promise<DeletePostResponse> {
+export async function deletePostPermanently(postId: string): Promise<DeletePostResponse> {
   const token = getAuthToken();
   
   if (!token) {
@@ -40,4 +40,4 @@ export async function deletePost(postId: string): Promise<DeletePostResponse> {
   });
 
   return response.data;
-} 
+}

@@ -3,9 +3,9 @@ import PostCard from '../components/PostCard';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorDisplay from '../components/common/ErrorDisplay';
 import Pagination from '../components/common/Pagination';
-import { usePosts } from '../hooks/usePosts';
-import { useDeletePost } from '../hooks/useDeletePost';
+import { usePosts, usePostActions } from '../hooks';
 import { PAGINATION } from '../constants/pagination';
+import { showSuccessAlert, showErrorAlert } from '../utils/alertUtils';
 import './Posts.css';
 
 /**
@@ -15,14 +15,22 @@ import './Posts.css';
 const Posts: React.FC = () => {
   // 게시글 목록 관련 훅
   const { posts, loading, error, pagination, fetchPosts, handlePageChange } = usePosts(PAGINATION.LARGE_PAGE_SIZE);
-  // 게시글 삭제 관련 훅
-  const { handleDelete } = useDeletePost();
+  // 게시글 액션 관련 훅 (논리적 삭제)
+  const { handleDeletePost, loading: actionLoading, error: actionError } = usePostActions();
 
   /**
-   * 게시글 삭제 성공 후 목록 새로고침
+   * 게시글 논리적 삭제 처리
    */
-  const onDeleteSuccess = () => {
-    fetchPosts(pagination.page, pagination.size);
+  const handleDelete = async (postId: string) => {
+    if (window.confirm('이 게시글을 삭제하시겠습니까? 삭제된 글은 삭제된 글 목록에서 확인할 수 있습니다.')) {
+      const success = await handleDeletePost(postId);
+      if (success) {
+        showSuccessAlert('게시글이 삭제되었습니다.');
+        fetchPosts(pagination.page, pagination.size);
+      } else {
+        showErrorAlert(actionError || '게시글 삭제에 실패했습니다.');
+      }
+    }
   };
 
   // 로딩 중일 때 스피너 표시
@@ -62,9 +70,10 @@ const Posts: React.FC = () => {
             <PostCard 
               key={post.postId} 
               post={post} 
-              onDelete={(postId) => handleDelete(postId, onDeleteSuccess)}
+              onDelete={handleDelete}
               showDeleteButton={true}
               showReportBadge={true}
+              deleteButtonDisabled={actionLoading}
             />
           ))
         )}

@@ -3,9 +3,7 @@ import PostCard from '../components/PostCard';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorDisplay from '../components/common/ErrorDisplay';
 import Pagination from '../components/common/Pagination';
-import { useReportedUsers } from '../hooks/useReportedUsers';
-import { useUserPosts } from '../hooks/useUserPosts';
-import { useDeletePost } from '../hooks/useDeletePost';
+import { useReportedUsers, useUserPosts, usePostActions } from '../hooks';
 import { getUserReportTypeKorean } from '../utils/reportTypeUtils';
 import { formatDate } from '../utils/dateUtils';
 import { showConfirmDialog } from '../utils/alertUtils';
@@ -22,8 +20,8 @@ const ReportedUsers: React.FC = () => {
   const { users, loading, error, pagination, fetchReportedUsers, handlePageChange } = useReportedUsers(PAGINATION.LARGE_PAGE_SIZE);
   // 사용자 게시글 관련 훅
   const { userPosts, selectedUser, handleUserClick, handleDeletePost } = useUserPosts();
-  // 게시글 삭제 관련 훅
-  const { handleDelete } = useDeletePost();
+  // 게시글 액션 관련 훅 (논리적 삭제)
+  const { handleDeletePost: handlePostDelete, loading: actionLoading, error: actionError } = usePostActions();
 
   /**
    * 사용자 삭제 핸들러
@@ -148,9 +146,17 @@ const ReportedUsers: React.FC = () => {
                 <PostCard 
                   key={post.postId} 
                   post={post} 
-                  onDelete={(postId) => handleDelete(postId, () => onDeletePostSuccess(postId))}
+                  onDelete={async (postId) => {
+                    if (window.confirm('이 게시글을 삭제하시겠습니까? 삭제된 글은 삭제된 글 목록에서 확인할 수 있습니다.')) {
+                      const success = await handlePostDelete(postId);
+                      if (success) {
+                        onDeletePostSuccess(postId);
+                      }
+                    }
+                  }}
                   showDeleteButton={true}
                   showReportBadge={true}
+                  deleteButtonDisabled={actionLoading}
                 />
               ))
             )}

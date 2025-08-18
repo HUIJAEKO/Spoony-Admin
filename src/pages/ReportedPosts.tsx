@@ -3,8 +3,7 @@ import PostCard from '../components/PostCard';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorDisplay from '../components/common/ErrorDisplay';
 import Pagination from '../components/common/Pagination';
-import { useReportedPosts } from '../hooks/useReportedPosts';
-import { useDeletePost } from '../hooks/useDeletePost';
+import { useReportedPosts, usePostActions } from '../hooks';
 import { PAGINATION } from '../constants/pagination';
 import './ReportedPosts.css';
 
@@ -15,14 +14,19 @@ import './ReportedPosts.css';
 const ReportedPosts: React.FC = () => {
   // 신고된 게시글 목록 관련 훅
   const { posts, loading, error, pagination, fetchReportedPosts, handlePageChange } = useReportedPosts(PAGINATION.LARGE_PAGE_SIZE);
-  // 게시글 삭제 관련 훅
-  const { handleDelete } = useDeletePost();
+  // 게시글 액션 관련 훅 (논리적 삭제)
+  const { handleDeletePost, loading: actionLoading, error: actionError } = usePostActions();
 
   /**
-   * 게시글 삭제 성공 후 목록 새로고침
+   * 게시글 논리적 삭제 처리
    */
-  const onDeleteSuccess = () => {
-    fetchReportedPosts(pagination.page, pagination.size);
+  const handleDelete = async (postId: string) => {
+    if (window.confirm('이 게시글을 삭제하시겠습니까? 삭제된 글은 삭제된 글 목록에서 확인할 수 있습니다.')) {
+      const success = await handleDeletePost(postId);
+      if (success) {
+        fetchReportedPosts(pagination.page, pagination.size);
+      }
+    }
   };
 
   // 로딩 중일 때 스피너 표시
@@ -52,9 +56,10 @@ const ReportedPosts: React.FC = () => {
             <PostCard 
               key={post.postId} 
               post={post} 
-              onDelete={(postId) => handleDelete(postId, onDeleteSuccess)}
+              onDelete={handleDelete}
               showDeleteButton={true}
               showReportBadge={true}
+              deleteButtonDisabled={actionLoading}
             />
           ))
         )}

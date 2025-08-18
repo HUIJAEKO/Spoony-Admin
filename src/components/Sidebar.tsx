@@ -16,6 +16,7 @@ const Sidebar: React.FC = () => {
         <NavLink to="/posts" className={({isActive}) => isActive ? 'active' : ''}>전체글 목록</NavLink>
         <NavLink to="/reported-posts" className={({isActive}) => isActive ? 'active' : ''}>신고된 글</NavLink>
         <NavLink to="/reported-users" className={({isActive}) => isActive ? 'active' : ''}>신고된 유저</NavLink>
+        <NavLink to="/deleted-posts" className={({isActive}) => isActive ? 'active' : ''}>삭제된 글</NavLink>
       </nav>
     </aside>
   );

@@ -51,6 +51,8 @@ export interface Post {
   isReported: boolean;
   reportCount: number;
   reports?: Report[];
+  status: 'active' | 'deleted';
+  deletedAt?: string;
 }
 
 /**
@@ -159,4 +161,33 @@ export interface PostsResponse {
 /**
  * 게시글 API 응답 인터페이스
  */
-export interface PostsApiResponse extends ApiResponse<PostsResponse> {} 
+export interface PostsApiResponse extends ApiResponse<PostsResponse> {}
+
+/**
+ * 게시글 삭제 요청 인터페이스
+ */
+export interface DeletePostRequest {
+  postId: string;
+}
+
+/**
+ * 게시글 복구 요청 인터페이스
+ */
+export interface RestorePostRequest {
+  postId: string;
+}
+
+/**
+ * 게시글 삭제/복구 응답 인터페이스
+ */
+export interface PostActionResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    postId: string;
+    status: 'active' | 'deleted';
+  };
+  error?: {
+    message: string;
+  };
+} 

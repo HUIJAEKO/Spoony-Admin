@@ -14,4 +14,7 @@ export const API_ENDPOINTS = {
   POSTS: '/api/v1/admin/posts',
   REPORTED_POSTS: '/api/v1/admin/posts/reported',
   REPORTED_USERS: '/api/v1/admin/users/reported',
+  DELETED_POSTS: '/api/v1/admin/posts/deleted',
+  DELETE_POST: '/api/v1/admin/posts/delete/{postId}',
+  RESTORE_POST: '/api/v1/admin/posts/restore/{postId}',
 } as const; 

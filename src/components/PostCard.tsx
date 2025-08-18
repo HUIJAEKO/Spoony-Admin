@@ -10,19 +10,42 @@ import './PostCard.css';
 interface PostCardProps {
   post: Post;
   onDelete?: (postId: string) => void;
+  onRestore?: (postId: string) => void;
   showDeleteButton?: boolean;
+  showRestoreButton?: boolean;
   showReportBadge?: boolean;
+  deleteButtonDisabled?: boolean;
+  restoreButtonDisabled?: boolean;
+  deleteButtonText?: string;
+  restoreButtonText?: string;
 }
 
 /**
  * 게시글 정보를 카드 형태로 표시하는 컴포넌트
  * @param post 게시글 정보
  * @param onDelete 삭제 핸들러 함수
+ * @param onRestore 복구 핸들러 함수
  * @param showDeleteButton 삭제 버튼 표시 여부 (기본값: true)
+ * @param showRestoreButton 복구 버튼 표시 여부 (기본값: false)
  * @param showReportBadge 신고 배지 표시 여부 (기본값: false)
+ * @param deleteButtonDisabled 삭제 버튼 비활성화 여부 (기본값: false)
+ * @param restoreButtonDisabled 복구 버튼 비활성화 여부 (기본값: false)
+ * @param deleteButtonText 삭제 버튼 텍스트 (기본값: "🗑️")
+ * @param restoreButtonText 복구 버튼 텍스트 (기본값: "🔄")
  * @returns 게시글 카드 JSX
  */
-const PostCard: React.FC<PostCardProps> = ({ post, onDelete, showDeleteButton = true, showReportBadge = false }) => {
+const PostCard: React.FC<PostCardProps> = ({ 
+  post, 
+  onDelete, 
+  onRestore,
+  showDeleteButton = true, 
+  showRestoreButton = false,
+  showReportBadge = false,
+  deleteButtonDisabled = false,
+  restoreButtonDisabled = false,
+  deleteButtonText = "🗑️",
+  restoreButtonText = "🔄"
+}) => {
 
   return (
     <div className={`post-card ${post.isReported ? 'reported' : ''}`}>
@@ -38,16 +61,31 @@ const PostCard: React.FC<PostCardProps> = ({ post, onDelete, showDeleteButton = 
             <span className="location">📍 {post.location}</span>
           </div>
         </div>
-        {/* 삭제 버튼 */}
-        {showDeleteButton && onDelete && (
-          <button 
-            className="delete-button"
-            onClick={() => onDelete(post.postId)}
-            title="삭제"
-          >
-            🗑️
-          </button>
-        )}
+        {/* 액션 버튼들 */}
+        <div className="action-buttons">
+          {/* 복구 버튼 */}
+          {showRestoreButton && onRestore && (
+            <button 
+              className={`restore-button ${restoreButtonText === "🔄" ? "icon-button" : ""}`}
+              onClick={() => onRestore(post.postId)}
+              disabled={restoreButtonDisabled}
+              title="복구"
+            >
+              {restoreButtonText}
+            </button>
+          )}
+          {/* 삭제 버튼 */}
+          {showDeleteButton && onDelete && (
+            <button 
+              className={`delete-button ${deleteButtonText === "🗑️" ? "icon-button" : ""}`}
+              onClick={() => onDelete(post.postId)}
+              disabled={deleteButtonDisabled}
+              title="삭제"
+            >
+              {deleteButtonText}
+            </button>
+          )}
+        </div>
       </div>
       
       {/* 게시글 내용 */}
