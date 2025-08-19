@@ -60,6 +60,15 @@
   gap: 4px;
 }
 
+.deleted-date {
+  color: #d32f2f !important;
+  font-weight: 500;
+  background: #ffebee;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
 .action-buttons {
   display: flex;
   gap: 8px;
@@ -94,10 +103,11 @@
 
 /* 텍스트 버튼 스타일 */
 .delete-button:not(.icon-button) {
-  background: #fff;
+  background: none;
   color: #d32f2f;
   font-size: 13px;
   min-width: 90px;
+  border: none;
 }
 
 .restore-button:not(.icon-button) {

@@ -82,6 +82,7 @@ const DeletedPosts: React.FC = () => {
               showDeleteButton={true}
               showRestoreButton={true}
               showReportBadge={false}
+              showDeletedDate={true}
               deleteButtonDisabled={permanentDeleteLoading}
               restoreButtonDisabled={actionLoading}
               deleteButtonText="영구삭제"

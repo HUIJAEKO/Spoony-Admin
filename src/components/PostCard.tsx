@@ -14,6 +14,7 @@ interface PostCardProps {
   showDeleteButton?: boolean;
   showRestoreButton?: boolean;
   showReportBadge?: boolean;
+  showDeletedDate?: boolean;
   deleteButtonDisabled?: boolean;
   restoreButtonDisabled?: boolean;
   deleteButtonText?: string;
@@ -41,6 +42,7 @@ const PostCard: React.FC<PostCardProps> = ({
   showDeleteButton = true, 
   showRestoreButton = false,
   showReportBadge = false,
+  showDeletedDate = false,
   deleteButtonDisabled = false,
   restoreButtonDisabled = false,
   deleteButtonText = "🗑️",
@@ -59,6 +61,9 @@ const PostCard: React.FC<PostCardProps> = ({
             <span className="author">작성자: {post.authorName}</span>
             <span className="date">{formatDate(post.createdAt)}</span>
             <span className="location">📍 {post.location}</span>
+            {showDeletedDate && post.deletedAt && (
+              <span className="deleted-date">삭제 시간 : {formatDate(post.deletedAt)}</span>
+            )}
           </div>
         </div>
         {/* 액션 버튼들 */}
